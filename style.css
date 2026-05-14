@@ -1,0 +1,424 @@
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#2c3e50;
+    font-family:Arial;
+    user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    touch-action:manipulation;
+}
+
+/* ================= PC ================= */
+
+.ludo-container{
+    width:450px;
+    text-align:center;
+    color:white;
+}
+
+.ludo{
+    width:450px;
+    height:450px;
+    background-image:url('ludo-bggg.jpg');
+    background-size:100% 100%;
+    background-repeat:no-repeat;
+    position:relative;
+    border:5px solid #fff;
+    border-radius:8px;
+}
+
+.player-piece{
+    width:26px;
+    height:26px;
+    border:2px solid #fff;
+    border-radius:50%;
+    position:absolute;
+    transition:all .3s ease;
+    z-index:10;
+    transform:translate(-50%,-50%);
+}
+
+.player-piece.highlight{
+    cursor:pointer;
+    animation:spin 1s infinite linear;
+    z-index:20;
+    border:2px dashed white;
+}
+
+@keyframes spin{
+
+    0%{
+        transform:translate(-50%,-50%) rotate(0deg) scale(1);
+    }
+
+    50%{
+        transform:translate(-50%,-50%) rotate(180deg) scale(1.3);
+    }
+
+    100%{
+        transform:translate(-50%,-50%) rotate(360deg) scale(1);
+    }
+}
+
+[player-id="P1"]{
+    background:#f1c40f;
+}
+
+[player-id="P2"]{
+    background:#27ae60;
+}
+
+[player-id="P3"]{
+    background:#c0392b;
+}
+
+[player-id="P4"]{
+    background:#2980b9;
+}
+
+.player-base{
+    width:40%;
+    height:40%;
+    position:absolute;
+    opacity:0;
+}
+
+.player-base.highlight{
+    opacity:0.85 !important;
+    animation:superBlink .45s infinite;
+    box-shadow:
+        0 0 20px #fff,
+        0 0 40px #fff,
+        0 0 70px #fff;
+}
+
+@keyframes superBlink{
+
+    0%{
+        opacity:0.2;
+        transform:scale(1);
+    }
+
+    50%{
+        opacity:1;
+        transform:scale(1.08);
+    }
+
+    100%{
+        opacity:0.2;
+        transform:scale(1);
+    }
+}
+
+[player-id="P1"].player-base{
+    bottom:0;
+    left:0;
+}
+
+[player-id="P2"].player-base{
+    top:0;
+    left:0;
+}
+
+[player-id="P3"].player-base{
+    top:0;
+    right:0;
+}
+
+[player-id="P4"].player-base{
+    bottom:0;
+    right:0;
+}
+
+.footer{
+    margin-top:18px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    gap:15px;
+}
+
+.roll-btn,
+#reset-btn{
+    padding:10px 18px;
+    cursor:pointer;
+    font-weight:bold;
+    border-radius:5px;
+    border:none;
+    font-size:16px;
+}
+
+.roll-btn{
+    background:#2ecc71;
+    color:white;
+}
+
+.dice-area{
+    display:flex;
+    gap:15px;
+    justify-content:center;
+    margin-bottom:10px;
+}
+
+.dice-wrapper{
+    perspective:600px;
+    width:60px;
+    height:60px;
+}
+
+.dice{
+    width:60px;
+    height:60px;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform 1s;
+}
+
+.face{
+    position:absolute;
+    width:60px;
+    height:60px;
+    background:white;
+    border:2px solid #ccc;
+    border-radius:10px;
+}
+
+.front{
+    transform:translateZ(30px);
+}
+
+.front::after{
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    background:#111;
+    border-radius:50%;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+.back{
+    transform:rotateX(180deg) translateZ(30px);
+}
+
+.back::before,
+.back::after{
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    background:#111;
+    border-radius:50%;
+}
+
+.back::before{
+    top:12px;
+    left:12px;
+}
+
+.back::after{
+    bottom:12px;
+    right:12px;
+}
+
+.right{
+    transform:rotateY(90deg) translateZ(30px);
+}
+
+.right::before{
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    background:#111;
+    border-radius:50%;
+    top:12px;
+    left:12px;
+    box-shadow:
+        12px 12px #111,
+        24px 24px #111;
+}
+
+.left{
+    transform:rotateY(-90deg) translateZ(30px);
+}
+
+.left::before{
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    background:#111;
+    border-radius:50%;
+    top:12px;
+    left:12px;
+    box-shadow:
+        24px 0 #111,
+        0 24px #111,
+        24px 24px #111;
+}
+
+.top{
+    transform:rotateX(90deg) translateZ(30px);
+}
+
+.top::before{
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    background:#111;
+    border-radius:50%;
+    top:12px;
+    left:12px;
+    box-shadow:
+        24px 0 #111,
+        12px 12px #111,
+        0 24px #111,
+        24px 24px #111;
+}
+
+.bottom{
+    transform:rotateX(-90deg) translateZ(30px);
+}
+
+.bottom::before{
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    background:#111;
+    border-radius:50%;
+    top:10px;
+    left:10px;
+    box-shadow:
+        28px 0 #111,
+        0 14px #111,
+        28px 14px #111,
+        0 28px #111,
+        28px 28px #111;
+}
+
+@keyframes rolling{
+
+    0%{
+        transform:rotateX(0deg) rotateY(0deg);
+    }
+
+    100%{
+        transform:rotateX(360deg) rotateY(360deg);
+    }
+}
+
+/* ================= MOBILE FIX ================= */
+
+@media screen and (max-width:768px){
+
+    html,
+    body{
+        overflow:auto;
+    }
+
+    body{
+        padding:10px 0;
+        align-items:flex-start;
+    }
+
+    .ludo-container{
+        width:100%;
+        max-width:375px;
+        transform:none;
+        margin:auto;
+    }
+
+    .ludo{
+        width:100vw;
+        max-width:375px;
+        height:100vw;
+        max-height:375px;
+        margin:auto;
+    }
+
+    .footer{
+        flex-direction:column;
+        gap:12px;
+        margin-top:12px;
+    }
+
+    .dice-area{
+        gap:10px;
+    }
+
+    .dice-wrapper{
+        width:52px;
+        height:52px;
+    }
+
+    .dice{
+        width:52px;
+        height:52px;
+    }
+
+    .face{
+        width:52px;
+        height:52px;
+    }
+
+    .front{
+        transform:translateZ(26px);
+    }
+
+    .back{
+        transform:rotateX(180deg) translateZ(26px);
+    }
+
+    .right{
+        transform:rotateY(90deg) translateZ(26px);
+    }
+
+    .left{
+        transform:rotateY(-90deg) translateZ(26px);
+    }
+
+    .top{
+        transform:rotateX(90deg) translateZ(26px);
+    }
+
+    .bottom{
+        transform:rotateX(-90deg) translateZ(26px);
+    }
+
+    .roll-btn,
+    #reset-btn{
+        font-size:14px;
+        padding:8px 16px;
+    }
+
+    .result,
+    .active-player{
+        font-size:24px;
+    }
+
+    .player-piece{
+        width:22px;
+        height:22px;
+    }
+}
