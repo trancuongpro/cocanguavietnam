@@ -4,11 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Cờ Cá Ngựa</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- NHẠC NỀN -->
+
+    <audio id="bg-music" loop autoplay>
+        <source src="cocangua.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="ludo-container">
+
+        <!-- BÀN CỜ -->
 
         <div class="ludo">
 
@@ -37,85 +46,131 @@
             </div>
 
             <div class="player-bases">
+
                 <div class="player-base" player-id="P1"></div>
                 <div class="player-base" player-id="P2"></div>
                 <div class="player-base" player-id="P3"></div>
                 <div class="player-base" player-id="P4"></div>
+
             </div>
 
         </div>
 
-        <div class="footer">
+        <!-- GIAO DIỆN ĐIỀU KHIỂN -->
 
-            <div class="dice-section">
+        <div class="game-ui">
+
+            <!-- DÒNG 1 -->
+
+            <div class="top-ui">
+
+                <button id="dice-btn" class="roll-btn">
+                    🎲 Đổ Xúc Xắc
+                </button>
 
                 <div class="dice-area">
 
                     <div class="dice-wrapper">
                         <div class="dice" id="dice1">
+
                             <div class="face front"></div>
                             <div class="face back"></div>
                             <div class="face top"></div>
                             <div class="face bottom"></div>
                             <div class="face right"></div>
                             <div class="face left"></div>
+
                         </div>
                     </div>
 
                     <div class="dice-wrapper">
                         <div class="dice" id="dice2">
+
                             <div class="face front"></div>
                             <div class="face back"></div>
                             <div class="face top"></div>
                             <div class="face bottom"></div>
                             <div class="face right"></div>
                             <div class="face left"></div>
+
                         </div>
                     </div>
 
                 </div>
 
-                <button id="dice-btn" class="roll-btn">
-                    Đổ Xúc Xắc
-                </button>
-
                 <div class="result">
-                    Kết Quả:
                     <span id="dice-value">0</span>
                 </div>
 
             </div>
 
-            <div class="controls">
-                <h2 class="active-player">
+            <!-- DÒNG 2 -->
+
+            <div class="bottom-ui">
+
+                <div class="active-player">
                     Lượt:
                     <span>P1</span>
-                </h2>
+                </div>
 
                 <button id="reset-btn">
-                    Chơi Lại
+                    🔄 Chơi Lại
                 </button>
+
+                <button id="music-btn">
+                    🔊
+                </button>
+
             </div>
 
         </div>
 
-        <!-- FOOTER CREDIT -->
+        <!-- CREDIT -->
 
-        <div style="
-            margin-top:14px;
-            text-align:center;
-            font-size:13px;
-            color:#FFD700;
-            font-weight:bold;
-            text-shadow:0 0 6px rgba(255,215,0,0.6);
-        ">
+        <div class="credit">
             Thiết Kế Trần Cường - Zalo: 0907860662
         </div>
 
     </div>
 
     <script src="script.js"></script>
-<script src="ketqua.js"></script>
+    <script src="ketqua.js"></script>
+
+    <script>
+
+        // ======================
+        // NHẠC NỀN
+        // ======================
+
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+
+        music.volume = 0.5;
+
+        document.body.addEventListener('click',()=>{
+
+            music.play().catch(()=>{});
+
+        },{ once:true });
+
+        musicBtn.addEventListener('click',()=>{
+
+            if(music.paused){
+
+                music.play();
+
+                musicBtn.innerHTML = '🔊';
+
+            }else{
+
+                music.pause();
+
+                musicBtn.innerHTML = '🔇';
+            }
+
+        });
+
+    </script>
 
 </body>
 </html>
