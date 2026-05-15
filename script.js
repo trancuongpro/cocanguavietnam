@@ -192,7 +192,7 @@ checkWin(player){
 
     const homeBase = HOME_BASE[player];
 
-    const homePos = this.positions[player].filter(pos=>
+    const homePos = this.positions[player].filter(pos =>
         pos >= homeBase && pos <= homeBase + 4
     );
 
@@ -200,7 +200,7 @@ checkWin(player){
 
     const levels = homePos
         .map(pos => pos - homeBase)
-        .sort((a,b)=> b-a);
+        .sort((a,b) => b - a);
 
     const has5 = levels.includes(4);
     const has4 = levels.includes(3);
@@ -209,20 +209,13 @@ checkWin(player){
 
     if(has5 && has4 && has3 && has2){
 
-        setTimeout(()=>{
-
-            const color = PLAYER_NAMES[player];
-
-            alert(
-                `🎉 Chúc Mừng Quân Cờ Màu ${color} Đã Thắng Trận Nhé Yeach! 🎉\nChúng Ta Chơi Ván Mới Nha Bạn Ơi`
-            );
-
-            location.reload();
-
-        },600);
+        // Không hiện bảng thắng
+        // Không reset game
 
     }
 }
+
+// ================================================================
 
 // ================================================================
 

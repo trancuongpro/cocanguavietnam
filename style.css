@@ -46,25 +46,78 @@ body{
     box-shadow:0 0 25px rgba(255,255,255,0.2);
 }
 
-/* ================= QUÂN CỜ ================= */
+/* ================= QUÂN CỜ 3D ================= */
 
 .player-piece{
     width:26px;
     height:26px;
-    border:2px solid #fff;
-    border-radius:50%;
     position:absolute;
-    transition:all .3s ease;
-    z-index:10;
+
+    border-radius:50%;
+
     transform:translate(-50%,-50%);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+
+    z-index:10;
+
+    /* VIỀN NGOÀI */
+    border:2px solid rgba(255,255,255,0.95);
+
+    /* BÓNG ĐỔ */
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.85),
+        inset 0 -4px 6px rgba(0,0,0,0.45),
+        0 3px 7px rgba(0,0,0,0.6),
+        0 0 8px rgba(255,255,255,0.25);
+
+    overflow:hidden;
 }
+
+/* ÁNH SÁNG PHẢN CHIẾU */
+
+.player-piece::before{
+    content:'';
+
+    position:absolute;
+
+    top:3px;
+    left:4px;
+
+    width:55%;
+    height:35%;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,0.78);
+
+    filter:blur(1px);
+
+    transform:rotate(-15deg);
+}
+
+/* HIỆU ỨNG KHI TỚI LƯỢT */
 
 .player-piece.highlight{
     cursor:pointer;
+
     animation:spin 1s infinite linear;
+
     z-index:20;
-    border:2px dashed white;
+
+    border:2px solid #ffffff;
+
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.95),
+        inset 0 -4px 6px rgba(0,0,0,0.55),
+        0 0 12px #ffffff,
+        0 0 24px rgba(255,255,255,0.9),
+        0 4px 10px rgba(0,0,0,0.75);
 }
+
+/* ================= XOAY QUÂN ================= */
 
 @keyframes spin{
 
@@ -73,7 +126,7 @@ body{
     }
 
     50%{
-        transform:translate(-50%,-50%) rotate(180deg) scale(1.25);
+        transform:translate(-50%,-50%) rotate(180deg) scale(1.22);
     }
 
     100%{
@@ -81,20 +134,44 @@ body{
     }
 }
 
+/* ================= QUÂN VÀNG ================= */
+
 [player-id="P1"]{
-    background:#f1c40f;
+    background:
+        radial-gradient(circle at 30% 30%,
+        #fff8ae 0%,
+        #f7d900 38%,
+        #b8860b 100%);
 }
+
+/* ================= QUÂN XANH LÁ ================= */
 
 [player-id="P2"]{
-    background:#27ae60;
+    background:
+        radial-gradient(circle at 30% 30%,
+        #b9ffd0 0%,
+        #2ecc71 38%,
+        #17693b 100%);
 }
+
+/* ================= QUÂN ĐỎ ================= */
 
 [player-id="P3"]{
-    background:#e74c3c;
+    background:
+        radial-gradient(circle at 30% 30%,
+        #ffc0bb 0%,
+        #ff4d3d 38%,
+        #8e140b 100%);
 }
 
+/* ================= QUÂN XANH DƯƠNG ================= */
+
 [player-id="P4"]{
-    background:#3498db;
+    background:
+        radial-gradient(circle at 30% 30%,
+        #bfe6ff 0%,
+        #3498db 38%,
+        #184f78 100%);
 }
 
 /* ================= BASE CHỚP LƯỢT ================= */
@@ -471,5 +548,186 @@ body{
     .player-piece{
         width:22px;
         height:22px;
+    }
+}
+
+/* ================= NÚT HƯỚNG DẪN ================= */
+
+#huongdan-btn{
+
+    border:none;
+
+    padding:10px 14px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:
+        linear-gradient(to bottom,
+        #ffcc33,
+        #d4a017);
+
+    box-shadow:
+        0 5px #8c6b00,
+        0 0 10px rgba(0,0,0,0.4);
+}
+
+#huongdan-btn:active{
+
+    transform:translateY(3px);
+
+    box-shadow:
+        0 2px #8c6b00;
+}
+
+/* ================= BẢNG HƯỚNG DẪN ================= */
+
+#huongdan-board{
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:100%;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,0.6);
+
+    z-index:999999;
+}
+
+/* ================= KHUNG ================= */
+
+.huongdan-box{
+
+    width:340px;
+
+    max-width:92vw;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:#a40000;
+
+    border:5px solid gold;
+
+    border-radius:16px;
+
+    padding:18px;
+
+    box-shadow:
+        0 0 30px rgba(0,0,0,0.8);
+
+    text-align:center;
+}
+
+/* ================= TIÊU ĐỀ ================= */
+
+.huongdan-title{
+
+    color:gold;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    margin-bottom:18px;
+
+    text-shadow:
+        0 0 8px black;
+}
+
+/* ================= NỘI DUNG ================= */
+
+.huongdan-content{
+
+    color:white;
+
+    font-size:15px;
+
+    line-height:1.8;
+
+    text-align:left;
+
+    margin-bottom:18px;
+}
+
+/* ================= NÚT OK ================= */
+
+#close-huongdan{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    color:#111;
+
+    background:
+        linear-gradient(to bottom,
+        #ffe082,
+        #f1c40f);
+
+    box-shadow:
+        0 5px #b7950b;
+}
+
+#close-huongdan:active{
+
+    transform:translateY(3px);
+
+    box-shadow:
+        0 2px #b7950b;
+}
+
+/* ================= MOBILE ================= */
+
+@media screen and (max-width:768px){
+
+    #huongdan-btn{
+
+        font-size:13px;
+
+        padding:8px 12px;
+    }
+
+    .huongdan-box{
+
+        width:92vw;
+
+        padding:14px;
+    }
+
+    .huongdan-title{
+
+        font-size:19px;
+    }
+
+    .huongdan-content{
+
+        font-size:14px;
     }
 }

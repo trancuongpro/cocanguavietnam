@@ -163,16 +163,21 @@ function showRankingBoard(){
 
     board.style.position = 'fixed';
     board.style.left = '50%';
-    board.style.top = '56%';
+    board.style.top = '50%';
     board.style.transform = 'translate(-50%,-50%)';
-    board.style.width = '340px';
-    board.style.maxWidth = '92vw';
+
+    // THU NHỎ GỌN MÀN HÌNH
+    board.style.width = '300px';
+    board.style.maxWidth = '90vw';
+    board.style.maxHeight = '90vh';
+    board.style.overflowY = 'auto';
+
     board.style.background = '#b30000';
-    board.style.border = '5px solid #111';
-    board.style.borderRadius = '14px';
-    board.style.padding = '18px';
+    board.style.border = '4px solid #111';
+    board.style.borderRadius = '12px';
+    board.style.padding = '14px';
     board.style.zIndex = '999999';
-    board.style.boxShadow = '0 0 30px rgba(0,0,0,0.8)';
+    board.style.boxShadow = '0 0 25px rgba(0,0,0,0.8)';
     board.style.fontFamily = 'Arial';
 
     let html = '';
@@ -181,12 +186,12 @@ function showRankingBoard(){
         <div style="
             text-align:center;
             color:white;
-            font-size:22px;
+            font-size:18px;
             font-weight:bold;
-            margin-bottom:18px;
+            margin-bottom:14px;
             text-shadow:0 0 10px black;
         ">
-            🏇 Kết Quả Thống Kê Trận Đua Ngựa 🏇
+            🏇 Kết Quả Trận Đua Ngựa 🏇
         </div>
     `;
 
@@ -212,38 +217,38 @@ function showRankingBoard(){
                 background:${bg};
                 border:2px solid white;
                 border-radius:10px;
-                padding:10px;
-                margin-bottom:10px;
+                padding:8px;
+                margin-bottom:8px;
                 color:white;
             ">
 
                 <div style="
-                    font-size:18px;
+                    font-size:16px;
                     font-weight:bold;
-                    margin-bottom:6px;
+                    margin-bottom:4px;
                 ">
                     ${ranks[index]}
                 </div>
 
                 <div style="
                     color:${data.color};
-                    font-size:20px;
+                    font-size:18px;
                     font-weight:bold;
-                    margin-bottom:6px;
+                    margin-bottom:4px;
                     text-shadow:0 0 8px black;
                 ">
                     Quân Cờ ${data.name}
                 </div>
 
                 <div style="
-                    font-size:15px;
-                    line-height:1.6;
+                    font-size:13px;
+                    line-height:1.5;
                 ">
-                    ✅ Vị Trí Đạt Được:
+                    ✅ Vị Trí:
                     <b>${levelsText}</b>
                     <br>
 
-                    💥 Số Lần Bị Đá:
+                    💥 Bị Đá:
                     <b style="color:#ffe082;">
                         ${data.kicked}
                     </b>
@@ -254,9 +259,45 @@ function showRankingBoard(){
         `;
     });
 
+    // =============================
+    // NÚT RESET CHƠI LẠI
+    // =============================
+
+    html += `
+
+        <button id="reset-game-btn" style="
+            width:100%;
+            margin-top:10px;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            background:#27ae60;
+            color:white;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            box-shadow:0 0 10px rgba(0,0,0,0.5);
+        ">
+            🔄 Reset Chơi Lại
+        </button>
+
+    `;
+
     board.innerHTML = html;
 
     document.body.appendChild(board);
+
+    // =============================
+    // SỰ KIỆN RESET GAME
+    // =============================
+
+    document
+        .getElementById('reset-game-btn')
+        .addEventListener('click',()=>{
+
+            location.reload();
+
+        });
 }
 
 })();
