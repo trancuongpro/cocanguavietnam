@@ -544,7 +544,7 @@ updateUI(){
 }
 }
 
-new LudoGame();
+window.game = new LudoGame();
 
 // ================= CHẶN CHUỘT PHẢI =================
 

@@ -6,6 +6,8 @@
 
 const HUONGDAN = `
 
+- Game Có Chọn Chơi Với Bot 
+ 
 - Đổ Xí Ngầu Để Di Chuyển
 
 - Bạn Xem Quân Cờ Nào Xoay Là Quân Sẽ Di Chuyển Hay Xuất Quân
