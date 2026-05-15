@@ -8,9 +8,11 @@ const HUONGDAN = `
 
 - Đổ Xí Ngầu Để Di Chuyển
 
-- Bạn Xem Quân Cờ Nào Xoay Là Quân Sẽ Di Chuyển
+- Bạn Xem Quân Cờ Nào Xoay Là Quân Sẽ Di Chuyển Hay Xuất Quân
 
 - Chạm Vào Quân Cờ Lập Tức Di Chuyển
+
+- Đổ Ra 1 6 , 1 1 , 2 2 , 3 3 , 4 4 , 5 5 , 6 6 sẽ được thêm lượt nữa
 
 - Xí Ngầu Ra Quân Là 1 6 , 1 1 , 2 2 , 3 3 , 4 4 , 5 5 , 6 6
 
