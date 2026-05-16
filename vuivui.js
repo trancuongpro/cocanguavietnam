@@ -1,6 +1,6 @@
 // =====================================
 // VUIVUI.JS
-// ĐẾM NGƯỢC RESET 15 GIÂY - GIỌNG TIẾNG ANH SIÊU TỐI GIẢN & ỔN ĐỊNH
+// ĐẾM NGƯỢC RESET 15 GIÂY (ANH) + ĐỒNG BỘ TIẾNG NGỰA HÍ LÊN CHUỒNG (5->4->3->2)
 // =====================================
 
 (function(){
@@ -57,7 +57,7 @@
         if(window.__countdownStarted) return;
         window.__countdownStarted = true;
 
-        let count = 15; // Nâng thời gian đếm ngược lên 15 giây theo yêu cầu
+        let count = 15; 
 
         // Tạo hộp giao diện hiển thị số giây đếm ngược ngoài màn hình
         const box =
@@ -96,7 +96,6 @@
 
                     box.innerHTML = '🔄 RESET GAME';
 
-                    // Khi về 0, lập tức reload lại trang để chơi trận mới từ đầu
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
                     }, 300);
@@ -124,16 +123,15 @@
     // =================================
 
     function speakEnglishNumber(num){
-        synth.cancel(); // Xóa lệnh cũ, ép phát âm số mới ngay lập tức
+        synth.cancel(); 
 
         const utter =
             new SpeechSynthesisUtterance(
                 num.toString()
             );
 
-        // Sử dụng mã ngôn ngữ tiếng Anh chuẩn Mỹ (luôn có sẵn trên Chrome PC)
         utter.lang = 'en-US'; 
-        utter.rate = 1.1; // Tốc độ đọc nhanh hơn một chút cho dứt khoát
+        utter.rate = 1.1; 
         utter.pitch = 1.0;
         utter.volume = 1;
 
@@ -143,7 +141,7 @@
 })();
 
 // =====================================
-// ÂM THANH VUI NHỘN TOÀN TRẬN (.MP3 KHÔNG ĐỔI)
+// ÂM THANH VUI NHỘN TOÀN TRẬN (.MP3)
 // =====================================
 (function(){
 
@@ -158,6 +156,7 @@
     kickSounds.forEach(a=>{ a.preload = 'auto'; });
     nguaHi.preload = 'auto';
 
+    // Mảng lưu vết thứ tự đã lên đỉnh chuồng thành công của từng màu
     const finishProgress = {
         P1:[], P2:[], P3:[], P4:[]
     };
@@ -237,35 +236,49 @@
                     playAudio(new Audio('nguahi.mp3'));
                 }
 
+                // Kiểm tra âm thanh lên chuồng dựa theo vị trí mới
                 checkFinishSound(player, newPos);
             });
         });
     }
 
+    // ================================================================
+    // LOGIC ĐỒNG BỘ CHUỒNG THEO SCRIPT.JS & ÉP BUỘC THỨ TỰ LÊN 5 -> 4 -> 3 -> 2
+    // ================================================================
     function checkFinishSound(player, pos){
-        const homeMap = { P1:100, P2:110, P3:120, P4:130 };
+        // Đồng bộ chuẩn bản đồ gốc: P1=100, P2=200, P3=300, P4=400
+        const homeMap = { P1:100, P2:200, P3:300, P4:400 };
         const base = homeMap[player];
 
-        if(pos < base || pos > base+4) return;
+        // Nếu quân cờ không nằm trong chuồng của người chơi đó, bỏ qua
+        if(pos < base || pos > base + 4) return;
 
+        // Tính toán chính xác Cấp độ (Level) hiển thị trên bảng cờ (từ 1 đến 5 tương ứng chỉ số 0 đến 4)
         const level = pos - base + 1;
         const progress = finishProgress[player];
 
+        // Điều kiện 1: Lên ô số 5 đầu tiên -> Kích hoạt hí 2 lần
         if(level === 5 && !progress.includes(5)){
             progress.push(5);
             playMany(2);
             return;
         }
+        
+        // Điều kiện 2: Phải có ô 5 rồi mới được kích hoạt khi lên ô 4
         if(level === 4 && progress.includes(5) && !progress.includes(4)){
             progress.push(4);
             playMany(2);
             return;
         }
+        
+        // Điều kiện 3: Phải có cả ô 5 và ô 4 rồi mới kích hoạt khi lên ô 3
         if(level === 3 && progress.includes(5) && progress.includes(4) && !progress.includes(3)){
             progress.push(3);
             playMany(2);
             return;
         }
+        
+        // Điều kiện 4: Phải có đủ 5, 4, 3 rồi mới kích hoạt khi lên ô 2 -> Hí vang dội 3 lần
         if(level === 2 && progress.includes(5) && progress.includes(4) && progress.includes(3) && !progress.includes(2)){
             progress.push(2);
             playMany(3);
