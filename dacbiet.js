@@ -169,17 +169,60 @@
 // PHÁO HOA CHIẾN THẮNG
 // =====================================
 
+// =====================================
+// PHÁO HOA CHỈ KHI KẾT THÚC THẬT
+// =====================================
+
 game.checkWin = function(player){
 
-    oldCheckWin(player);
+    // gọi check gốc
 
-    // chờ bảng kết quả hiện
+    const result =
+        oldCheckWin(player);
+
+    // chờ bảng kết quả render
 
     setTimeout(()=>{
+
+        // =============================
+        // KIỂM TRA THẬT SỰ THẮNG
+        // =============================
+
+        const finishBoard =
+
+            document.body.innerText
+            .includes('HẠNG NHẤT')
+
+            ||
+
+            document.body.innerText
+            .includes('Kết Quả');
+
+        // chưa kết thúc thật
+
+        if(!finishBoard){
+
+            return;
+        }
+
+        // đã có pháo hoa
+
+        if(
+            document.getElementById(
+                'fireworks-layer'
+            )
+        ){
+
+            return;
+        }
+
+        // chạy pháo hoa
 
         startFireworks();
 
     },1200);
+
+    return result;
 };
 
 // =====================================
