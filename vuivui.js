@@ -393,24 +393,42 @@
 
     function playMany(times){
 
-        if(!soundEnabled()) return;
+    if(!soundEnabled()) return;
 
-        let delay = 0;
+    let current = 0;
 
-        for(let i=0;i<times;i++){
+    function playNext(){
+
+        if(current >= times){
+
+            return;
+        }
+
+        // tạo audio mới
+
+        const a =
+            new Audio('nguahi.mp3');
+
+        a.volume = 1;
+
+        a.play();
+
+        current++;
+
+        // phát xong mới phát tiếp
+
+        a.onended = ()=>{
 
             setTimeout(()=>{
 
-                const a =
-                    new Audio('nguahi.mp3');
+                playNext();
 
-                a.play();
-
-            },delay);
-
-            delay += 450;
-        }
+            },120);
+        };
     }
+
+    playNext();
+}
 
     // =================================
     // CHỜ GAME
