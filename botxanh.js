@@ -43,11 +43,19 @@ function runBotP4(){
 
         if(game.isDouble){
 
-            window.confirm = ()=>{
+    const oldConfirm = window.confirm;
 
-                return move.steps === game.diceValue;
-            };
-        }
+    window.confirm = ()=>{
+
+        return move.steps === game.diceValue;
+    };
+
+    setTimeout(()=>{
+
+        window.confirm = oldConfirm;
+
+    },100);
+}
 
         const piece = document.querySelector(
             `[player-id="P4"][piece="${move.index}"]`
@@ -67,4 +75,15 @@ function runBotP4(){
     },2300);
 }
 
-setInterval(runBotP4,400);
+window.BOT_P4_LOOP =
+setInterval(()=>{
+
+    if(
+        typeof GAME_MODE !== 'undefined' &&
+        GAME_MODE.P4 === 'bot'
+    ){
+
+        runBotP4();
+    }
+
+},400);

@@ -6,7 +6,7 @@
 
 const HUONGDAN = `
 
-- Game Có Chọn Chơi Với Bot 
+- Game Có Chọn Chơi Với Bot Và Người Bạn Nên Chọn Trước Khi Chơi
  
 - Đổ Xí Ngầu Để Di Chuyển
 
@@ -20,7 +20,7 @@ const HUONGDAN = `
 
 - Xí Ngầu Nhích Trong Chuồng 1 1 , 2 2 , 3 3 , 4 4 , 5 5 , 6 6
 
-- Game Có Đá Quân Về Chuồng Và Lưu Số Lần Bị Đá Khi Kết Thúc
+- Game Có Đá Quân Về Chuồng ( Đá Bặc Biệt ) Và Lưu Số Lần Bị Đá Khi Kết Thúc
 
 - Người Thắng Cuộc Phải Về Theo 5 4 3 2
 

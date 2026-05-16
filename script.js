@@ -84,9 +84,21 @@ init(){
 
     });
 
-    document.getElementById('reset-btn').addEventListener('click',()=>{
-        location.reload();
-    });
+    document
+        .getElementById('reset-btn')
+        .addEventListener('click',()=>{
+
+            const ok = confirm(
+
+        `Bạn có chắc muốn Chơi Lại không?
+
+        Toàn bộ trận đấu hiện tại sẽ bị reset!`
+             );
+
+            if(!ok) return;
+
+            location.reload();
+        });
 
     this.updateUI();
 }
@@ -314,24 +326,45 @@ canMove(player,pos,steps){
 
 getDestination(player,pos,steps){
 
-    if(pos >= 500){
-        return START_POS[player];
-    }
+    // ======================
+    // QUÂN TRONG SÂN NHÀ
+    // ======================
 
-    if(pos >= 100){
-        return pos + 1;
+    if(pos >= 500){
+
+        return START_POS[player];
     }
 
     let current = pos;
 
     for(let i=0; i<steps; i++){
 
+        // ======================
+        // TỪ ĐƯỜNG NGOÀI
+        // VÀO CHUỒNG
+        // ======================
+
         if(current === TURN_HOME[player]){
 
-            const remain = steps - i - 1;
+            current = HOME_BASE[player];
 
-            return HOME_BASE[player] + remain;
+            continue;
         }
+
+        // ======================
+        // ĐANG TRONG CHUỒNG
+        // ======================
+
+        if(current >= 100){
+
+            current++;
+
+            continue;
+        }
+
+        // ======================
+        // ĐƯỜNG NGOÀI
+        // ======================
 
         current = (current + 1) % 52;
     }
@@ -372,19 +405,52 @@ highlightMoves(){
 
         let possible = false;
 
+        // ======================
+        // QUÂN TRONG CHUỒNG
+        // ======================
+
         if(pos >= 100){
 
-            possible = this.canMove(player,pos,1);
+            possible =
+                this.canMove(player,pos,1);
+        }
 
-        }else if(this.isDouble){
+        // ======================
+        // DOUBLE NGOÀI BÀN
+        // ======================
+
+        else if(this.isDouble && pos < 100){
+
+            const canHalf =
+                this.canMove(
+                    player,
+                    pos,
+                    this.dice1
+                );
+
+            const canFull =
+                this.canMove(
+                    player,
+                    pos,
+                    this.diceValue
+                );
 
             possible =
-                this.canMove(player,pos,this.dice1) ||
-                this.canMove(player,pos,this.diceValue);
+                canHalf || canFull;
+        }
 
-        }else{
+        // ======================
+        // BÌNH THƯỜNG
+        // ======================
 
-            possible = this.canMove(player,pos,this.diceValue);
+        else{
+
+            possible =
+                this.canMove(
+                    player,
+                    pos,
+                    this.diceValue
+                );
         }
 
         if(possible){
@@ -392,11 +458,17 @@ highlightMoves(){
             hasMove = true;
 
             document
-                .querySelector(`[player-id="${player}"][piece="${idx}"]`)
+                .querySelector(
+                    `[player-id="${player}"][piece="${idx}"]`
+                )
                 .classList.add('highlight');
         }
 
     });
+
+    // ======================
+    // KHÔNG CÓ NƯỚC ĐI
+    // ======================
 
     if(!hasMove){
 
@@ -404,7 +476,9 @@ highlightMoves(){
 
             if(this.canRelease){
 
-                document.getElementById('dice-btn').disabled = false;
+                document
+                    .getElementById('dice-btn')
+                    .disabled = false;
 
             }else{
 

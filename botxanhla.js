@@ -57,11 +57,19 @@ function runBotP2(){
 
         if(game.isDouble){
 
-            window.confirm = ()=>{
+    const oldConfirm = window.confirm;
 
-                return move.steps === game.diceValue;
-            };
-        }
+    window.confirm = ()=>{
+
+        return move.steps === game.diceValue;
+    };
+
+    setTimeout(()=>{
+
+        window.confirm = oldConfirm;
+
+    },100);
+}
 
         const piece = document.querySelector(
             `[player-id="P2"][piece="${move.index}"]`
@@ -81,4 +89,15 @@ function runBotP2(){
     },2300);
 }
 
-setInterval(runBotP2,400);
+window.BOT_P2_LOOP =
+setInterval(()=>{
+
+    if(
+        typeof GAME_MODE !== 'undefined' &&
+        GAME_MODE.P2 === 'bot'
+    ){
+
+        runBotP2();
+    }
+
+},400);

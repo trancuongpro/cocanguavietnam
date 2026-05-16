@@ -2,7 +2,11 @@
 // MODE GAME
 // =============================
 
-window.GAME_MODE = {
+window.GAME_MODE = JSON.parse(
+
+    localStorage.getItem('GAME_MODE')
+
+) || {
 
     P1:'human',
     P2:'bot',
@@ -126,6 +130,11 @@ document
 
     GAME_MODE.P4 =
         document.getElementById('mode-p4').value;
+		
+    localStorage.setItem(
+       'GAME_MODE',
+       JSON.stringify(GAME_MODE)
+    );
 
     // =========================
     // ĐÓNG BẢNG

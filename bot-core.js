@@ -1,12 +1,67 @@
 // =====================================
-// BOT CORE AI
+// BOT CORE AI - ULTRA HARD
 // =====================================
 
 window.BotCore = {
 
-    // ==============================
-    // CHẤM ĐIỂM NƯỚC ĐI
-    // ==============================
+    // =================================
+    // KIỂM TRA NGUY HIỂM
+    // =================================
+
+    isDanger(game,player,dest){
+
+        for(const enemyPlayer in game.positions){
+
+            if(enemyPlayer === player) continue;
+
+            for(const ep of game.positions[enemyPlayer]){
+
+                if(ep >= 100) continue;
+
+                const dist =
+                    (dest - ep + 52) % 52;
+
+                // nằm trong vùng dễ bị đá
+
+                if(dist >= 1 && dist <= 6){
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    },
+
+    // =================================
+    // ĐẾM QUÂN CÓ THỂ ĐÁ
+    // =================================
+
+    countKickTargets(game,player,dest){
+
+        let count = 0;
+
+        for(const enemyPlayer in game.positions){
+
+            if(enemyPlayer === player) continue;
+
+            game.positions[enemyPlayer]
+            .forEach(ep=>{
+
+                if(ep === dest){
+
+                    count++;
+                }
+
+            });
+        }
+
+        return count;
+    },
+
+    // =================================
+    // ĐÁNH GIÁ NƯỚC ĐI
+    // =================================
 
     evaluateMove(game,player,index,steps){
 
@@ -27,84 +82,158 @@ window.BotCore = {
 
         let score = 0;
 
-        // ==========================
+        // =================================
         // ĐÁ QUÂN
-        // ==========================
+        // =================================
 
-        const enemy =
-            game.getPieceAt(dest);
+        const kickCount =
+            this.countKickTargets(
+                game,
+                player,
+                dest
+            );
 
-        if(enemy && enemy.player !== player){
+        if(kickCount > 0){
 
-            score += 1000;
+            score += kickCount * 5000;
         }
 
-        // ==========================
-        // VÀO CHUỒNG
-        // ==========================
+        // =================================
+        // ƯU TIÊN VỀ ĐÍCH
+        // =================================
 
         if(dest >= 100){
 
-            score += 600;
+            score += 3000;
+
+            // ưu tiên lên cao
+
+            if(dest === 105) score += 9000;
+            if(dest === 104) score += 7000;
+            if(dest === 103) score += 5000;
+            if(dest === 102) score += 3000;
+
+            // tránh ô 101
+
+            if(dest === 101){
+
+                score -= 4000;
+            }
         }
 
-        // ==========================
+        // =================================
         // RA QUÂN
-        // ==========================
+        // =================================
 
         if(pos >= 500){
 
-            score += 400;
+            score += 1200;
         }
 
-        // ==========================
-        // TIẾN XA
-        // ==========================
+        // =================================
+        // ƯU TIÊN TIẾN XA
+        // =================================
 
-        score += dest * 2;
+        score += dest * 4;
 
-        // ==========================
+        // =================================
         // CHẶN ĐẦU
-        // ==========================
+        // =================================
 
         for(const enemyPlayer in game.positions){
 
             if(enemyPlayer === player) continue;
 
-            game.positions[enemyPlayer].forEach(ep=>{
+            game.positions[enemyPlayer]
+            .forEach(ep=>{
 
-                if(ep < 100){
+                if(ep >= 100) return;
 
-                    const distance =
-                        Math.abs(ep - dest);
+                const dist =
+                    (ep - dest + 52) % 52;
 
-                    if(distance <= 2){
+                // đứng chặn trước mặt
 
-                        score += 120;
-                    }
+                if(dist >= 1 && dist <= 2){
+
+                    score += 800;
                 }
 
+                // đứng sát sau lưng địch
+
+                if(dist >= 50){
+
+                    score += 500;
+                }
             });
+        }
+
+        // =================================
+        // NÉ NGUY HIỂM
+        // =================================
+
+        if(this.isDanger(
+            game,
+            player,
+            dest
+        )){
+
+            score -= 2500;
+        }
+
+        // =================================
+        // DOUBLE ƯU TIÊN ĐI TỔNG
+        // =================================
+
+        if(game.isDouble){
+
+            if(steps === game.diceValue){
+
+                score += 700;
+            }
+        }
+
+        // =================================
+        // LUẬT ĐẶC BIỆT
+        // =================================
+
+        if(
+            (pos === 2 && steps === 3) ||
+            (pos === 3 && steps === 4) ||
+            (pos === 4 && steps === 5)
+        ){
+
+            score += 6000;
+        }
+
+        // =================================
+        // ƯU TIÊN ĐƯỜNG VỀ
+        // =================================
+
+        if(pos >= 100){
+
+            score += 1500;
         }
 
         return score;
     },
 
-    // ==============================
-    // SUY NGHĨ NƯỚC ĐI
-    // ==============================
+    // =================================
+    // SUY NGHĨ
+    // =================================
 
     think(game,player){
 
         const results = [];
 
-        game.positions[player].forEach((pos,index)=>{
+        game.positions[player]
+        .forEach((pos,index)=>{
 
-            // ======================
-            // QUÂN TRONG CHUỒNG
-            // ======================
+            // =============================
+            // QUÂN TRONG NHÀ
+            // =============================
 
-            if(pos >= 100){
+            if(pos >= 500){
 
                 const score =
                     this.evaluateMove(
@@ -125,9 +254,9 @@ window.BotCore = {
                 return;
             }
 
-            // ======================
+            // =============================
             // ĐI TỔNG
-            // ======================
+            // =============================
 
             const fullScore =
                 this.evaluateMove(
@@ -145,13 +274,13 @@ window.BotCore = {
 
             });
 
-            // ======================
-            // NẾU DOUBLE
-            // ======================
+            // =============================
+            // DOUBLE ĐI NỬA
+            // =============================
 
             if(game.isDouble){
 
-                const singleScore =
+                const halfScore =
                     this.evaluateMove(
                         game,
                         player,
@@ -163,7 +292,7 @@ window.BotCore = {
 
                     index,
                     steps:game.dice1,
-                    score:singleScore
+                    score:halfScore
 
                 });
             }
@@ -175,7 +304,24 @@ window.BotCore = {
             return null;
         }
 
-        results.sort((a,b)=>b.score-a.score);
+        // =================================
+        // SẮP XẾP THÔNG MINH
+        // =================================
+
+        results.sort((a,b)=>{
+
+            // ưu tiên score
+
+            if(b.score !== a.score){
+
+                return b.score - a.score;
+            }
+
+            // nếu bằng điểm
+            // ưu tiên bước lớn
+
+            return b.steps - a.steps;
+        });
 
         return results[0];
     }
