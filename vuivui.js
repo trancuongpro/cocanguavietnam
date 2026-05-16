@@ -1,27 +1,20 @@
 // =====================================
 // VUIVUI.JS
-// ĐẾM NGƯỢC RESET 15 GIÂY (ANH) + ĐỒNG BỘ TIẾNG NGỰA HÍ LÊN CHUỒNG (5->4->3->2)
+// ÂM THANH + PHÁO HOA KẾT THÚC TRẬN
+// (CHẠY ĐƯỢC TRÊN FILE:// - KHÔNG DÙNG FETCH)
 // =====================================
 
 (function(){
-
     const synth = window.speechSynthesis;
     let isSpeechUnlocked = false;
 
-    // =================================
-    // CƠ CHẾ MỞ KHÓA AUDIO CHO TRÌNH DUYỆT (CHROME PC / SAFARI IOS)
-    // =================================
     function unlockSpeechOnSystem() {
         if (isSpeechUnlocked) return;
-        
-        synth.cancel(); // Dọn dẹp hàng đợi hệ thống
-
+        synth.cancel();
         const utterBlank = new SpeechSynthesisUtterance(' ');
         utterBlank.volume = 0;
         synth.speak(utterBlank);
-        
         isSpeechUnlocked = true;
-        
         document.removeEventListener('click', unlockSpeechOnSystem);
         document.removeEventListener('touchstart', unlockSpeechOnSystem);
         console.log('AUDIO SYSTEM UNLOCKED');
@@ -30,258 +23,245 @@
     document.addEventListener('click', unlockSpeechOnSystem);
     document.addEventListener('touchstart', unlockSpeechOnSystem);
 
-    // =================================
-    // CHỜ BẢNG KẾT QUẢ XUẤT HIỆN ĐỂ KÍCH HOẠT ĐẾM NGƯỢC
-    // =================================
-
-    const waitBoard = setInterval(()=>{
-
-        const board =
-            document.getElementById(
-                'bang-ketqua'
-            );
-
-        if(!board) return;
-
-        clearInterval(waitBoard);
-
-        startCountdownSystem();
-
-    },500);
-
-    // =================================
-    // BẮT ĐẦU ĐẾM NGƯỢC 15 GIÂY
-    // =================================
-
-    function startCountdownSystem(){
-        if(window.__countdownStarted) return;
-        window.__countdownStarted = true;
-
-        let count = 15; 
-
-        // Tạo hộp giao diện hiển thị số giây đếm ngược ngoài màn hình
-        const box =
-            document.createElement('div');
-
-        box.id = 'countdown-reset';
-
-        box.style.position = 'fixed';
-        box.style.left = '50%';
-        box.style.bottom = '30px';
-        box.style.transform = 'translateX(-50%)';
-        box.style.background = 'rgba(0,0,0,0.85)';
-        box.style.border = '3px solid gold';
-        box.style.borderRadius = '14px';
-        box.style.padding = '18px 30px';
-        box.style.color = 'white';
-        box.style.fontSize = '34px';
-        box.style.fontWeight = 'bold';
-        box.style.zIndex = '9999999';
-        box.style.textAlign = 'center';
-        box.style.boxShadow = '0 0 20px gold';
-
-        document.body.appendChild(box);
-
-        updateText();
-        speakEnglishNumber(count);
-
-        const interval =
-            setInterval(()=>{
-
-                count--;
-
-                if(count <= 0){
-
-                    clearInterval(interval);
-
-                    box.innerHTML = '🔄 RESET GAME';
-
-                    setTimeout(() => {
-                        window.location.href = window.location.pathname;
-                    }, 300);
-
-                    return;
-                }
-
-                updateText();
-                speakEnglishNumber(count);
-
-            },1000);
-
-        function updateText(){
-            box.innerHTML =
-                `
-                ⏳ RESET AFTER
-                <br>
-                ${count}
-                `;
-        }
-    }
-
-    // =================================
-    // HÀM ĐỌC SỐ TIẾNG ANH MẶC ĐỊNH SIÊU NHẸ
-    // =================================
-
-    function speakEnglishNumber(num){
-        synth.cancel(); 
-
-        const utter =
-            new SpeechSynthesisUtterance(
-                num.toString()
-            );
-
-        utter.lang = 'en-US'; 
-        utter.rate = 1.1; 
-        utter.pitch = 1.0;
-        utter.volume = 1;
-
-        synth.speak(utter);
-    }
-
-})();
-
-// =====================================
-// ÂM THANH VUI NHỘN TOÀN TRẬN (.MP3)
-// =====================================
-(function(){
-
+    // ========== ÂM THANH (DÙNG TRỰC TIẾP, KHÔNG FETCH) ==========
     const kickSounds = [
         new Audio('chetmayroi.mp3'),
         new Audio('troioi.mp3'),
         new Audio('uagido.mp3')
     ];
+    const diChuyenSound = new Audio('dichuyen.mp3');
+    const lenNguaSound = new Audio('lenngua.mp3');
+    const xuatQuanSound = new Audio('nguahi.mp3');
 
-    const nguaHi = new Audio('nguahi.mp3');
+    kickSounds.forEach(a => { a.preload = 'auto'; });
+    diChuyenSound.preload = 'auto';
+    lenNguaSound.preload = 'auto';
+    xuatQuanSound.preload = 'auto';
 
-    kickSounds.forEach(a=>{ a.preload = 'auto'; });
-    nguaHi.preload = 'auto';
-
-    // Mảng lưu vết thứ tự đã lên đỉnh chuồng thành công của từng màu
-    const finishProgress = {
-        P1:[], P2:[], P3:[], P4:[]
+    // ========== MAP SÂN NHÀ (HOME_YARD) VÀ VỊ TRÍ XUẤT QUÂN (START_POS) ==========
+    // Dựa theo script.js
+    const HOME_YARD_MAP = {
+        P1: [500, 501, 502, 503],
+        P2: [600, 601, 602, 603],
+        P3: [700, 701, 702, 703],
+        P4: [800, 801, 802, 803]
+    };
+    
+    const START_POS_MAP = {
+        P1: 0,
+        P2: 13,
+        P3: 26,
+        P4: 39
     };
 
-    function soundEnabled(){
+    function soundEnabled() {
         const bgm = document.getElementById('bg-music');
-        if(!bgm) return true;
-        if(bgm.paused) return false;
-        if(bgm.muted) return false;
-        if(bgm.volume <= 0) return false;
+        if (!bgm) return true;
+        if (bgm.paused) return false;
+        if (bgm.muted) return false;
+        if (bgm.volume <= 0) return false;
         return true;
     }
 
-    function playAudio(audio){
-        if(!soundEnabled()) return;
-        try{
+    function playAudio(audio) {
+        if (!soundEnabled()) return;
+        try {
             audio.currentTime = 0;
-            audio.play();
-        }catch(e){}
+            audio.play().catch(e => console.log('Audio error:', e));
+        } catch (e) {}
     }
 
-    function playMany(times){
-        if(!soundEnabled()) return;
-        let current = 0;
+    // Mảng lưu thứ tự lên chuồng thành công (để bắt buộc 5->4->3->2)
+    const finishProgress = {
+        P1: [], P2: [], P3: [], P4: []
+    };
 
-        function playNext(){
-            if(current >= times) return;
+    // Hàm phát lenngua.mp3 (1 lần khi lên chuồng)
+    function playLenNgua() {
+        if (!soundEnabled()) return;
+        try {
+            lenNguaSound.currentTime = 0;
+            lenNguaSound.play().catch(e => console.log('Len ngua error:', e));
+        } catch (e) {}
+    }
 
-            const a = new Audio('nguahi.mp3');
-            a.volume = 1;
-            
-            a.play().catch(()=>{});
+    // Hàm phát nguahi.mp3 (khi xuất quân)
+    function playXuatQuan() {
+        if (!soundEnabled()) return;
+        try {
+            xuatQuanSound.currentTime = 0;
+            xuatQuanSound.play().catch(e => console.log('Xuat quan error:', e));
+        } catch (e) {}
+    }
 
-            current++;
-            a.onended = ()=>{
-                setTimeout(()=>{
-                    playNext();
-                },120);
-            };
+    // ========== PHÁO HOA KHI KẾT THÚC TRẬN (BẢN ĐẸP) ==========
+    function startFireworks() {
+        if (typeof confetti !== 'function') {
+            console.log('Thêm thư viện canvas-confetti để có pháo hoa đẹp');
+            return;
         }
-        playNext();
+
+        // Pháo hoa kéo dài 6 giây
+        const duration = 6000;
+        const end = Date.now() + duration;
+
+        // Màu sắc rực rỡ hơn
+        const colors = [
+            '#ff0000', '#00ff00', '#0000ff', '#ffff00', 
+            '#ff00ff', '#00ffff', '#ff8800', '#ff44cc', '#ffffff'
+        ];
+
+        (function frame() {
+            // Pháo hoa bên trái
+            confetti({
+                particleCount: 8,
+                angle: 60,
+                spread: 70,
+                origin: { x: 0, y: 0.6 },
+                colors: colors,
+                startVelocity: 25,
+                decay: 0.9,
+                ticks: 200
+            });
+            
+            // Pháo hoa bên phải
+            confetti({
+                particleCount: 8,
+                angle: 120,
+                spread: 70,
+                origin: { x: 1, y: 0.6 },
+                colors: colors,
+                startVelocity: 25,
+                decay: 0.9,
+                ticks: 200
+            });
+            
+            // Pháo hoa từ trên xuống (trung tâm)
+            confetti({
+                particleCount: 5,
+                angle: 90,
+                spread: 55,
+                origin: { x: 0.5, y: 0.2 },
+                colors: colors,
+                startVelocity: 18,
+                decay: 0.9
+            });
+            
+            // Pháo hoa bung lớn giữa sân (ngẫu nhiên)
+            if (Math.random() > 0.6) {
+                confetti({
+                    particleCount: 30,
+                    spread: 100,
+                    origin: { x: 0.5, y: 0.5 },
+                    colors: colors,
+                    startVelocity: 15,
+                    decay: 0.92,
+                    ticks: 150
+                });
+            }
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        })();
     }
 
-    const waitGame = setInterval(()=>{
-        if(!window.game) return;
+    // ========== THEO DÕI KẾT THÚC TRẬN ==========
+    const waitForResultBoard = setInterval(() => {
+        const board = document.getElementById('bang-ketqua');
+        if (board) {
+            clearInterval(waitForResultBoard);
+            startFireworks();
+        }
+    }, 500);
+
+    // ========== GÁN SỰ KIỆN VÀO GAME ==========
+    const waitGame = setInterval(() => {
+        if (!window.game) return;
         clearInterval(waitGame);
         hookGame();
-    },300);
+    }, 300);
 
-    function hookGame(){
-        const oldUpdate = game.updateUI.bind(game);
-        let oldState = JSON.stringify(game.positions);
+    function hookGame() {
+        const oldUpdate = window.game.updateUI.bind(window.game);
+        let oldState = JSON.stringify(window.game.positions);
 
-        game.updateUI = function(){
+        window.game.updateUI = function() {
             const before = JSON.parse(oldState);
             oldUpdate();
-            const after = game.positions;
+            const after = window.game.positions;
             checkEvents(before, after);
             oldState = JSON.stringify(after);
         };
     }
 
-    function checkEvents(before, after){
-        const players = ['P1','P2','P3','P4'];
+    function checkEvents(before, after) {
+        const players = ['P1', 'P2', 'P3', 'P4'];
 
-        players.forEach(player=>{
-            after[player]
-            .forEach((newPos,idx)=>{
+        players.forEach(player => {
+            after[player].forEach((newPos, idx) => {
                 const oldPos = before[player][idx];
 
-                if(oldPos < 100 && newPos >= 500){
-                    const rnd = kickSounds[Math.floor(Math.random()*kickSounds.length)];
+                // Phát âm thanh di chuyển khi quân cờ đổi vị trí
+                if (oldPos !== newPos) {
+                    playAudio(diChuyenSound);
+                }
+
+                // ========== XUẤT QUÂN (ÁP DỤNG CHO CẢ 4 MÀU) ==========
+                // Kiểm tra: quân từ sân nhà của player đó ra đúng vị trí START_POS
+                const homeYard = HOME_YARD_MAP[player];
+                const startPos = START_POS_MAP[player];
+                
+                if (homeYard.includes(oldPos) && newPos === startPos) {
+                    playXuatQuan();
+                }
+
+                // ========== BỊ ĐÁ (RANDOM 3 ÂM THANH) ==========
+                // Bị đá: từ dưới 100 (trên bàn) bay về sân nhà (>=500)
+                if (oldPos < 100 && newPos >= 500) {
+                    const rnd = kickSounds[Math.floor(Math.random() * kickSounds.length)];
                     playAudio(rnd);
                 }
 
-                if(oldPos >= 500 && newPos < 52){
-                    playAudio(new Audio('nguahi.mp3'));
-                }
-
-                // Kiểm tra âm thanh lên chuồng dựa theo vị trí mới
+                // Kiểm tra lên chuồng theo thứ tự 5 -> 4 -> 3 -> 2
                 checkFinishSound(player, newPos);
             });
         });
     }
 
-    // ================================================================
-    // LOGIC ĐỒNG BỘ CHUỒNG THEO SCRIPT.JS & ÉP BUỘC THỨ TỰ LÊN 5 -> 4 -> 3 -> 2
-    // ================================================================
-    function checkFinishSound(player, pos){
-        // Đồng bộ chuẩn bản đồ gốc: P1=100, P2=200, P3=300, P4=400
-        const homeMap = { P1:100, P2:200, P3:300, P4:400 };
+    function checkFinishSound(player, pos) {
+        const homeMap = { P1: 100, P2: 200, P3: 300, P4: 400 };
         const base = homeMap[player];
+        if (!base) return;
 
-        // Nếu quân cờ không nằm trong chuồng của người chơi đó, bỏ qua
-        if(pos < base || pos > base + 4) return;
+        // Chỉ xét khi quân cờ nằm trong khu vực chuồng (100-104, 200-204...)
+        if (pos < base || pos > base + 4) return;
 
-        // Tính toán chính xác Cấp độ (Level) hiển thị trên bảng cờ (từ 1 đến 5 tương ứng chỉ số 0 đến 4)
-        const level = pos - base + 1;
+        const level = pos - base + 1; // 1,2,3,4,5
         const progress = finishProgress[player];
 
-        // Điều kiện 1: Lên ô số 5 đầu tiên -> Kích hoạt hí 2 lần
-        if(level === 5 && !progress.includes(5)){
+        // Lên ô 5 đầu tiên
+        if (level === 5 && !progress.includes(5)) {
             progress.push(5);
-            playMany(2);
+            playLenNgua();
             return;
         }
-        
-        // Điều kiện 2: Phải có ô 5 rồi mới được kích hoạt khi lên ô 4
-        if(level === 4 && progress.includes(5) && !progress.includes(4)){
+        // Lên ô 4 (phải có 5)
+        if (level === 4 && progress.includes(5) && !progress.includes(4)) {
             progress.push(4);
-            playMany(2);
+            playLenNgua();
             return;
         }
-        
-        // Điều kiện 3: Phải có cả ô 5 và ô 4 rồi mới kích hoạt khi lên ô 3
-        if(level === 3 && progress.includes(5) && progress.includes(4) && !progress.includes(3)){
+        // Lên ô 3 (phải có 5,4)
+        if (level === 3 && progress.includes(5) && progress.includes(4) && !progress.includes(3)) {
             progress.push(3);
-            playMany(2);
+            playLenNgua();
             return;
         }
-        
-        // Điều kiện 4: Phải có đủ 5, 4, 3 rồi mới kích hoạt khi lên ô 2 -> Hí vang dội 3 lần
-        if(level === 2 && progress.includes(5) && progress.includes(4) && progress.includes(3) && !progress.includes(2)){
+        // Lên ô 2 (phải có 5,4,3)
+        if (level === 2 && progress.includes(5) && progress.includes(4) && progress.includes(3) && !progress.includes(2)) {
             progress.push(2);
-            playMany(3);
+            playLenNgua();
             return;
         }
     }
