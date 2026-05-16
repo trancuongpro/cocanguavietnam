@@ -38,43 +38,36 @@
         ){
 
             // =================================
-            // ĐANG Ở Ô 2
-            // ĐỔ TỔNG 3
-            // => LÊN Ô 3
+            // LUẬT ƯU ÁI 5 - 4 - 3 - 2
+            // CHUỒNG THẮNG
             // =================================
 
-            if(pos === 2 && steps === 3){
-
-                return 3;
+            // Ô 2 -> Ô 3
+            if(
+                pos === HOME_BASE[player] + 1 &&
+                steps === 3
+            ){
+                return HOME_BASE[player] + 2;
             }
 
-            // =================================
-            // ĐANG Ở Ô 3
-            // ĐỔ TỔNG 4
-            // => LÊN Ô 4
-            // =================================
-
-            if(pos === 3 && steps === 4){
-
-                return 4;
+            // Ô 3 -> Ô 4
+            if(
+                pos === HOME_BASE[player] + 2 &&
+                steps === 4
+            ){
+                return HOME_BASE[player] + 3;
             }
 
-            // =================================
-            // ĐANG Ở Ô 4
-            // ĐỔ TỔNG 5
-            // => LÊN Ô 5
-            // =================================
-
-            if(pos === 4 && steps === 5){
-
-                return 5;
+            // Ô 4 -> Ô 5
+            if(
+                pos === HOME_BASE[player] + 3 &&
+                steps === 5
+            ){
+                return HOME_BASE[player] + 4;
             }
 
-            return oldGetDestination(
-                player,
-                pos,
-                steps
-            );
+            // Nếu không rơi vào luật ưu ái, chạy logic gốc
+            return oldGetDestination(player, pos, steps);
         };
 
         // =====================================
@@ -100,25 +93,21 @@
                 oldPositions[player][idx];
 
             // chạy move gốc
-
             oldMove(el);
 
             const newPos =
                 game.positions[player][idx];
 
             // không di chuyển
-
             if(oldPos === newPos) return;
 
             // tính bước đi thật
-
             let steps =
                 (newPos - oldPos + 52) % 52;
 
             if(steps <= 0) return;
 
             // chỉ áp dụng 1 -> 6
-
             if(
                 steps < 1 ||
                 steps > 6
@@ -139,20 +128,16 @@
                 .forEach((enemyPos,eIdx)=>{
 
                     // bỏ qua quân trong nhà
-
                     if(enemyPos >= 100) return;
 
                     // khoảng cách
-
                     const dist =
                         (enemyPos - oldPos + 52) % 52;
 
                     // đúng khoảng cách
-
                     if(dist === steps){
 
                         // đá quân
-
                         game.positions[enemy][eIdx] =
                             500 + eIdx;
                     }
@@ -165,363 +150,342 @@
         };
 
         // =====================================
-        
-// =====================================
-// PHÁO HOA CHIẾN THẮNG KIỂU THẬT
-// =====================================
+        // PHÁO HOA CHIẾN THẮNG KIỂU THẬT
+        // =====================================
 
-game.checkWin = function(player){
+        game.checkWin = function(player){
 
-    const result =
-        oldCheckWin(player);
+            const result =
+                oldCheckWin(player);
 
-    setTimeout(()=>{
+            setTimeout(()=>{
 
-        const finishBoard =
+                const finishBoard =
+                    document.body.innerText
+                    .includes('HẠNG NHẤT')
+                    ||
+                    document.body.innerText
+                    .includes('Kết Quả');
 
-            document.body.innerText
-            .includes('HẠNG NHẤT')
+                if(!finishBoard) return;
 
-            ||
+                if(
+                    document.getElementById(
+                        'fireworks-layer'
+                    )
+                ){
+                    return;
+                }
 
-            document.body.innerText
-            .includes('Kết Quả');
+                startFireworks();
 
-        if(!finishBoard) return;
+            },1200);
 
-        if(
-            document.getElementById(
-                'fireworks-layer'
-            )
-        ){
-            return;
+            return result;
+        };
+
+        // =====================================
+        // START FIREWORKS
+        // =====================================
+
+        function startFireworks(){
+
+            if(
+                document.getElementById(
+                    'fireworks-layer'
+                )
+            ) return;
+
+            const layer =
+                document.createElement('div');
+
+            layer.id = 'fireworks-layer';
+
+            layer.style.position = 'fixed';
+            layer.style.left = '0';
+            layer.style.top = '0';
+            layer.style.width = '100%';
+            layer.style.height = '100%';
+            layer.style.pointerEvents = 'none';
+            layer.style.zIndex = '999999';
+            layer.style.overflow = 'hidden';
+
+            document.body.appendChild(layer);
+
+            // bắn liên tục
+            const interval = setInterval(()=>{
+
+                launchFirework(layer);
+
+            },350);
+
+            // dừng sau 20 giây
+            setTimeout(()=>{
+
+                clearInterval(interval);
+
+                layer.remove();
+
+            },20000);
         }
 
-        startFireworks();
+        // =====================================
+        // PHÁO HOA BAY LÊN
+        // =====================================
 
-    },1200);
+        function launchFirework(layer){
 
-    return result;
-};
+            const rocket =
+                document.createElement('div');
 
-// =====================================
-// START FIREWORKS
-// =====================================
+            rocket.style.position = 'absolute';
 
-function startFireworks(){
+            const startX =
+                10 + Math.random()*80;
 
-    if(
-        document.getElementById(
-            'fireworks-layer'
-        )
-    ) return;
+            rocket.style.left =
+                startX + '%';
 
-    const layer =
-        document.createElement('div');
+            rocket.style.bottom = '-20px';
 
-    layer.id = 'fireworks-layer';
+            rocket.style.width = '4px';
+            rocket.style.height = '18px';
 
-    layer.style.position = 'fixed';
-    layer.style.left = '0';
-    layer.style.top = '0';
-    layer.style.width = '100%';
-    layer.style.height = '100%';
-    layer.style.pointerEvents = 'none';
-    layer.style.zIndex = '999999';
-    layer.style.overflow = 'hidden';
+            rocket.style.borderRadius = '10px';
 
-    document.body.appendChild(layer);
+            rocket.style.background = 'white';
 
-    // bắn liên tục
+            rocket.style.boxShadow =
+                `
+                0 0 10px white,
+                0 0 20px cyan
+                `;
 
-    const interval = setInterval(()=>{
+            layer.appendChild(rocket);
 
-        launchFirework(layer);
+            // độ cao ngẫu nhiên
+            const boomHeight =
+                25 + Math.random()*40;
 
-    },350);
+            // Thời gian bay ngẫu nhiên từ thời điểm tạo cho đến khi nổ
+            const durationTime = 900 + Math.random()*500;
 
-    // dừng sau 20 giây
+            rocket.animate([
+                {
+                    transform: 'translateY(0)',
+                    opacity: 1
+                },
+                {
+                    transform: `translateY(-${window.innerHeight * (boomHeight/100)}px)`,
+                    opacity: 1
+                }
+            ],{
+                duration: durationTime,
+                easing: 'ease-out',
+                fill: 'forwards'
+            });
 
-    setTimeout(()=>{
+            // nổ pháo dựa theo thời gian bay thực tế của animation
+            setTimeout(()=>{
 
-        clearInterval(interval);
+                const rect =
+                    rocket.getBoundingClientRect();
 
-        layer.remove();
+                createExplosion(
+                    layer,
+                    rect.left,
+                    rect.top
+                );
 
-    },20000);
-}
+                rocket.remove();
 
-// =====================================
-// PHÁO HOA BAY LÊN
-// =====================================
-
-function launchFirework(layer){
-
-    const rocket =
-        document.createElement('div');
-
-    rocket.style.position = 'absolute';
-
-    const startX =
-        10 + Math.random()*80;
-
-    rocket.style.left =
-        startX + '%';
-
-    rocket.style.bottom = '-20px';
-
-    rocket.style.width = '4px';
-    rocket.style.height = '18px';
-
-    rocket.style.borderRadius = '10px';
-
-    rocket.style.background = 'white';
-
-    rocket.style.boxShadow =
-        `
-        0 0 10px white,
-        0 0 20px cyan
-        `;
-
-    layer.appendChild(rocket);
-
-    // độ cao ngẫu nhiên
-
-    const boomHeight =
-        25 + Math.random()*40;
-
-    rocket.animate([
-
-        {
-            transform:
-            'translateY(0)',
-            opacity:1
-        },
-
-        {
-            transform:
-            `translateY(-${window.innerHeight * (boomHeight/100)}px)`,
-            opacity:1
+            }, durationTime);
         }
 
-    ],{
+        // =====================================
+        // TẠO VỤ NỔ
+        // =====================================
 
-        duration:
-            900 + Math.random()*500,
-
-        easing:'ease-out',
-
-        fill:'forwards'
-
-    });
-
-    // nổ pháo
-
-    setTimeout(()=>{
-
-        const rect =
-            rocket.getBoundingClientRect();
-
-        createExplosion(
+        function createExplosion(
             layer,
-            rect.left,
-            rect.top
-        );
+            x,
+            y
+        ){
 
-        rocket.remove();
+            const particleCount =
+                40 + Math.random()*30;
 
-    },1000);
-}
+            for(let i=0;i<particleCount;i++){
 
-// =====================================
-// TẠO VỤ NỔ
-// =====================================
+                const p =
+                    document.createElement('div');
 
-function createExplosion(
-    layer,
-    x,
-    y
-){
+                p.style.position = 'absolute';
 
-    const particleCount =
-        40 + Math.random()*30;
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
 
-    for(let i=0;i<particleCount;i++){
+                const size =
+                    3 + Math.random()*4;
 
-        const p =
-            document.createElement('div');
+                p.style.width =
+                    size + 'px';
 
-        p.style.position = 'absolute';
+                p.style.height =
+                    size + 'px';
 
-        p.style.left = x + 'px';
-        p.style.top = y + 'px';
+                p.style.borderRadius = '50%';
 
-        const size =
-            3 + Math.random()*4;
+                const color =
+                    randomColor();
 
-        p.style.width =
-            size + 'px';
+                p.style.background =
+                    color;
 
-        p.style.height =
-            size + 'px';
+                p.style.boxShadow =
+                    `
+                    0 0 6px white,
+                    0 0 12px ${color},
+                    0 0 25px ${color}
+                    `;
 
-        p.style.borderRadius = '50%';
+                layer.appendChild(p);
 
-        const color =
-            randomColor();
+                // góc bắn
+                const angle =
+                    Math.random() * Math.PI * 2;
 
-        p.style.background =
-            color;
+                // khoảng cách
+                const distance =
+                    80 + Math.random()*180;
 
-        p.style.boxShadow =
-            `
-            0 0 6px white,
-            0 0 12px ${color},
-            0 0 25px ${color}
-            `;
+                const dx =
+                    Math.cos(angle) * distance;
 
-        layer.appendChild(p);
+                const dy =
+                    Math.sin(angle) * distance;
 
-        // góc bắn
+                p.animate([
 
-        const angle =
-            Math.random() * Math.PI * 2;
+                    {
+                        transform:
+                            'translate(0,0) scale(1)',
+                        opacity:1
+                    },
 
-        // khoảng cách
+                    {
+                        transform:
+                            `translate(${dx}px,${dy}px) scale(0)`,
+                        opacity:0
+                    }
 
-        const distance =
-            80 + Math.random()*180;
+                ],{
 
-        const dx =
-            Math.cos(angle) * distance;
+                    duration:
+                        1400 + Math.random()*600,
 
-        const dy =
-            Math.sin(angle) * distance;
+                    easing:'cubic-bezier(0.1,0.8,0.2,1)',
 
-        p.animate([
+                    fill:'forwards'
 
-            {
-                transform:
-                    'translate(0,0) scale(1)',
-                opacity:1
-            },
+                });
 
-            {
-                transform:
-                    `translate(${dx}px,${dy}px) scale(0)`,
-                opacity:0
+                setTimeout(()=>{
+
+                    p.remove();
+
+                },2200);
             }
 
-        ],{
-
-            duration:
-                1400 + Math.random()*600,
-
-            easing:'cubic-bezier(0.1,0.8,0.2,1)',
-
-            fill:'forwards'
-
-        });
-
-        setTimeout(()=>{
-
-            p.remove();
-
-        },2200);
-    }
-
-    // flash sáng
-
-    createFlash(layer,x,y);
-}
-
-// =====================================
-// FLASH SÁNG
-// =====================================
-
-function createFlash(layer,x,y){
-
-    const flash =
-        document.createElement('div');
-
-    flash.style.position = 'absolute';
-
-    flash.style.left = x + 'px';
-    flash.style.top = y + 'px';
-
-    flash.style.width = '10px';
-    flash.style.height = '10px';
-
-    flash.style.borderRadius = '50%';
-
-    flash.style.background = 'white';
-
-    flash.style.boxShadow =
-        `
-        0 0 30px white,
-        0 0 60px white,
-        0 0 120px white
-        `;
-
-    layer.appendChild(flash);
-
-    flash.animate([
-
-        {
-            transform:'scale(0)',
-            opacity:1
-        },
-
-        {
-            transform:'scale(8)',
-            opacity:0
+            // flash sáng
+            createFlash(layer,x,y);
         }
 
-    ],{
+        // =====================================
+        // FLASH SÁNG
+        // =====================================
 
-        duration:500,
-        easing:'ease-out',
-        fill:'forwards'
-    });
+        function createFlash(layer,x,y){
 
-    setTimeout(()=>{
+            const flash =
+                document.createElement('div');
 
-        flash.remove();
+            flash.style.position = 'absolute';
 
-    },500);
-}
+            flash.style.left = x + 'px';
+            flash.style.top = y + 'px';
 
-// =====================================
-// RANDOM COLOR CẦU VỒNG
-// =====================================
+            flash.style.width = '10px';
+            flash.style.height = '10px';
 
-function randomColor(){
+            flash.style.borderRadius = '50%';
 
-    const colors = [
+            flash.style.background = 'white';
 
-        '#ff0000',
-        '#ff8800',
-        '#ffff00',
-        '#00ff00',
-        '#00ffff',
-        '#0088ff',
-        '#4444ff',
-        '#aa00ff',
-        '#ff00aa',
-        '#ffffff'
+            flash.style.boxShadow =
+                `
+                0 0 30px white,
+                0 0 60px white,
+                0 0 120px white
+                `;
 
-    ];
+            layer.appendChild(flash);
 
-    return colors[
-        Math.floor(
-            Math.random()*colors.length
-        )
-    ];
-}
+            flash.animate([
 
-console.log(
-    'ĐÃ KÍCH HOẠT PHÁO HOA MỚI'
-);
-}
+                {
+                    transform:'scale(0)',
+                    opacity:1
+                },
+
+                {
+                    transform:'scale(8)',
+                    opacity:0
+                }
+
+            ],{
+
+                duration:500,
+                easing:'ease-out',
+                fill:'forwards'
+            });
+
+            setTimeout(()=>{
+
+                flash.remove();
+
+            },500);
+        }
+
+        // =====================================
+        // RANDOM COLOR CẦU VỒNG
+        // =====================================
+
+        function randomColor(){
+
+            const colors = [
+                '#ff0000',
+                '#ff8800',
+                '#ffff00',
+                '#00ff00',
+                '#00ffff',
+                '#0088ff',
+                '#4444ff',
+                '#aa00ff',
+                '#ff00aa',
+                '#ffffff'
+            ];
+
+            return colors[
+                Math.floor(
+                    Math.random()*colors.length
+                )
+            ];
+        }
+
+        console.log(
+            'ĐÃ KÍCH HOẠT PHÁO HOA MỚI'
+        );
+    }
 
 })();
