@@ -1,7 +1,7 @@
 // =====================================
 // DACBIET.JS
 // LUẬT ĐẶC BIỆT CỜ CÁ NGỰA VIỆT NAM
-// + PHÁO HOA CHIẾN THẮNG
+// + PHÁO HOA CHIẾN THẮNG (CẬP NHẬT ĐỒNG BỘ CANMOVE)
 // =====================================
 
 (function(){
@@ -27,10 +27,55 @@
         const oldCheckWin =
             game.checkWin.bind(game);
 
-        // =====================================
-        // ƯU ÁI ĐƯỜNG VỀ ĐÍCH
-        // =====================================
+        // Giữ lại hàm canMove gốc để sử dụng khi không rơi vào luật đặc biệt
+        const oldCanMove = 
+            game.canMove.bind(game);
 
+        // =====================================
+        // CẤP QUYỀN DI CHUYỂN (BÊN TRONG CHUỒNG)
+        // =====================================
+        game.canMove = function(player, pos, steps) {
+            const homeBase = HOME_BASE[player];
+
+            // Kiểm tra xem nước đi này có thỏa mãn luật nhảy cóc ưu ái hay không
+            // Ô 1 chuồng (HOME_BASE + 1) đổ 3 bước -> lên Ô 2 chuồng (HOME_BASE + 2)
+            if (pos === homeBase + 1 && steps === 3) {
+                // Kiểm tra xem ô đích đến (Ô 3) có bị quân mình chặn hay không
+                const targetPos = homeBase + 2;
+                const pieceAtTarget = this.getPieceAt(targetPos);
+                if (pieceAtTarget && pieceAtTarget.player === player) {
+                    return false; // Bị quân mình chặn thì không đi được
+                }
+                return true; // Hợp lệ! Cho phép đi không cần xúc xắc Double
+            }
+
+            // Ô 2 chuồng (HOME_BASE + 2) đổ 4 bước -> lên Ô 3 chuồng (HOME_BASE + 3)
+            if (pos === homeBase + 2 && steps === 4) {
+                const targetPos = homeBase + 3;
+                const pieceAtTarget = this.getPieceAt(targetPos);
+                if (pieceAtTarget && pieceAtTarget.player === player) {
+                    return false;
+                }
+                return true; 
+            }
+
+            // Ô 3 chuồng (HOME_BASE + 3) đổ 5 bước -> lên Ô 4 chuồng (HOME_BASE + 4)
+            if (pos === homeBase + 3 && steps === 5) {
+                const targetPos = homeBase + 4;
+                const pieceAtTarget = this.getPieceAt(targetPos);
+                if (pieceAtTarget && pieceAtTarget.player === player) {
+                    return false;
+                }
+                return true;
+            }
+
+            // Nếu không thuộc các trường hợp nhảy cóc đặc biệt, chạy logic kiểm tra mặc định của game
+            return oldCanMove(player, pos, steps);
+        };
+
+        // =====================================
+        // ƯU ÁI ĐƯỜNG VỀ ĐÍCH (ĐỊNH VỊ ĐÍCH ĐẾN)
+        // =====================================
         game.getDestination = function(
             player,
             pos,
@@ -42,7 +87,7 @@
             // CHUỒNG THẮNG
             // =================================
 
-            // Ô 2 -> Ô 3
+            // Quân đang ở Ô 1 chuồng (tương ứng hiển thị nhãn số 2 trên bàn cờ) -> Lên Ô 2 chuồng (nhãn số 3)
             if(
                 pos === HOME_BASE[player] + 1 &&
                 steps === 3
@@ -50,7 +95,7 @@
                 return HOME_BASE[player] + 2;
             }
 
-            // Ô 3 -> Ô 4
+            // Quân đang ở Ô 2 chuồng (tương ứng hiển thị nhãn số 3 trên bàn cờ) -> Lên Ô 3 chuồng (nhãn số 4)
             if(
                 pos === HOME_BASE[player] + 2 &&
                 steps === 4
@@ -58,7 +103,7 @@
                 return HOME_BASE[player] + 3;
             }
 
-            // Ô 4 -> Ô 5
+            // Quân đang ở Ô 3 chuồng (tương ứng hiển thị nhãn số 4 trên bàn cờ) -> Lên Ô 4 chuồng (nhãn số 5)
             if(
                 pos === HOME_BASE[player] + 3 &&
                 steps === 5
@@ -73,7 +118,6 @@
         // =====================================
         // GIÁM SÁT TOÀN BỘ NƯỚC ĐI
         // =====================================
-
         game.handleMove = function(el){
 
             const oldPositions =
@@ -116,7 +160,6 @@
             // =================================
             // ĐÁ DÂY CHUYỀN
             // =================================
-
             const allPlayers =
                 ['P1','P2','P3','P4'];
 
@@ -152,7 +195,6 @@
         // =====================================
         // PHÁO HOA CHIẾN THẮNG KIỂU THẬT
         // =====================================
-
         game.checkWin = function(player){
 
             const result =
@@ -187,7 +229,6 @@
         // =====================================
         // START FIREWORKS
         // =====================================
-
         function startFireworks(){
 
             if(
@@ -232,7 +273,6 @@
         // =====================================
         // PHÁO HOA BAY LÊN
         // =====================================
-
         function launchFirework(layer){
 
             const rocket =
@@ -267,7 +307,6 @@
             const boomHeight =
                 25 + Math.random()*40;
 
-            // Thời gian bay ngẫu nhiên từ thời điểm tạo cho đến khi nổ
             const durationTime = 900 + Math.random()*500;
 
             rocket.animate([
@@ -285,7 +324,6 @@
                 fill: 'forwards'
             });
 
-            // nổ pháo dựa theo thời gian bay thực tế của animation
             setTimeout(()=>{
 
                 const rect =
@@ -305,7 +343,6 @@
         // =====================================
         // TẠO VỤ NỔ
         // =====================================
-
         function createExplosion(
             layer,
             x,
@@ -351,11 +388,9 @@
 
                 layer.appendChild(p);
 
-                // góc bắn
                 const angle =
                     Math.random() * Math.PI * 2;
 
-                // khoảng cách
                 const distance =
                     80 + Math.random()*180;
 
@@ -366,45 +401,34 @@
                     Math.sin(angle) * distance;
 
                 p.animate([
-
                     {
                         transform:
                             'translate(0,0) scale(1)',
                         opacity:1
                     },
-
                     {
                         transform:
                             `translate(${dx}px,${dy}px) scale(0)`,
                         opacity:0
                     }
-
                 ],{
-
                     duration:
                         1400 + Math.random()*600,
-
                     easing:'cubic-bezier(0.1,0.8,0.2,1)',
-
                     fill:'forwards'
-
                 });
 
                 setTimeout(()=>{
-
                     p.remove();
-
                 },2200);
             }
 
-            // flash sáng
             createFlash(layer,x,y);
         }
 
         // =====================================
         // FLASH SÁNG
         // =====================================
-
         function createFlash(layer,x,y){
 
             const flash =
@@ -432,35 +456,28 @@
             layer.appendChild(flash);
 
             flash.animate([
-
                 {
                     transform:'scale(0)',
                     opacity:1
                 },
-
                 {
                     transform:'scale(8)',
                     opacity:0
                 }
-
             ],{
-
                 duration:500,
                 easing:'ease-out',
                 fill:'forwards'
             });
 
             setTimeout(()=>{
-
                 flash.remove();
-
             },500);
         }
 
         // =====================================
         // RANDOM COLOR CẦU VỒNG
         // =====================================
-
         function randomColor(){
 
             const colors = [
@@ -484,7 +501,7 @@
         }
 
         console.log(
-            'ĐÃ KÍCH HOẠT PHÁO HOA MỚI'
+            'ĐÃ CẬP NHẬT KIỂM TRA CANMOVE ĐẶC BIỆT THÀNH CÔNG'
         );
     }
 

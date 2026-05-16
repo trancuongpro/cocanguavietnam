@@ -7,6 +7,8 @@
 const HUONGDAN = `
 
 - Game Có Chọn Chơi Với Bot Và Người Bạn Nên Chọn Trước Khi Chơi
+
+-Nếu Bot Do Dự Nước Di Chuyển Ta Có Thể Tác Động Thay Bot
  
 - Đổ Xí Ngầu Để Di Chuyển
 
